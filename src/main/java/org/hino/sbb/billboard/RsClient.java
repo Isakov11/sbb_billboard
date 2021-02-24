@@ -1,5 +1,7 @@
 package org.hino.sbb.billboard;
 
+import org.apache.log4j.Logger;
+
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ws.rs.WebApplicationException;
@@ -14,6 +16,8 @@ import static java.lang.Thread.sleep;
 
 @Singleton
 public class RsClient {
+    private static final Logger logger = Logger.getLogger(RsClient.class);
+
     private Client client = ClientBuilder.newClient();
     private WebTarget myResource = client.target("http://localhost:8080/admin/stations/api/1");
     private int counter = 0;
@@ -28,12 +32,13 @@ public class RsClient {
                 counter = 0;
             }
             else{
-                while (counter < MAX_CONNECT_TRY){
+                if (counter < MAX_CONNECT_TRY){
                     try {
-                        sleep(1000);
+                        sleep(5000);
                         counter++;
                         getDate();
                     } catch (InterruptedException e) {
+                        logger.error(e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -41,11 +46,12 @@ public class RsClient {
         }catch (WebApplicationException | ResponseProcessingException ex) {
             try {
                 if (counter < MAX_CONNECT_TRY ) {
-                    sleep(1000);
+                    sleep(5000);
                     counter++;
                     getDate();
                 }
             } catch (InterruptedException e) {
+                logger.error(e.getMessage());
                 e.printStackTrace();
             }
         }

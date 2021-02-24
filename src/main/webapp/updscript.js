@@ -1,7 +1,7 @@
 var wsocket;
 function connect() {
     //wsocket = new WebSocket("ws://" + document.location.host + document.location.pathname + "dukeetf");
-    wsocket = new WebSocket("ws://localhost:8085/billboard/dukeetf");
+    wsocket = new WebSocket("ws://localhost:8085/billboard/sbbsep");
     wsocket.onmessage = onMessage;
 }
 function onMessage(evt) {

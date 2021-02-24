@@ -1,6 +1,7 @@
 package org.hino.sbb.billboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.log4j.Logger;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.EJB;
@@ -17,14 +18,19 @@ import javax.jms.MessageListener;
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge") })
 
 public class MDBMessageListener implements MessageListener {
+    private static final Logger logger = Logger.getLogger(MDBMessageListener.class);
     private ObjectMapper mapper = new ObjectMapper();
 
     @EJB
     RsClient rsClient;
 
+    @EJB
+    ETFEndpoint eTFEndpoint;
+
     @Override
     public void onMessage(Message message) {
         String jsonString = rsClient.getDate();
-        ETFEndpoint.send(jsonString);
+        logger.info("JMS message received");
+        eTFEndpoint.send(jsonString);
     }
 }
