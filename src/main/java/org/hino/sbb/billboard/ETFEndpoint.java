@@ -3,6 +3,7 @@ package org.hino.sbb.billboard;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import javax.ejb.Singleton;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
 import javax.websocket.OnOpen;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+@Singleton
 @ServerEndpoint("/sbbsep")
 public class ETFEndpoint {
     private static final Logger logger = Logger.getLogger(ETFEndpoint.class);
@@ -19,8 +21,12 @@ public class ETFEndpoint {
 
     private static Queue<Session> queue = new ConcurrentLinkedQueue<>();
 
+    public ETFEndpoint() {
+    }
+
     public void send(String message) {
         this.message = message;
+
         try {
             /* Send updates to all open WebSocket sessions */
             for (Session session : queue) {
@@ -28,7 +34,7 @@ public class ETFEndpoint {
                 logger.info("Sent to websocket: " + message);
             }
         } catch (IOException e) {
-            logger.log(Level.INFO, e.toString());
+            logger.error(e.toString());
         }
     }
 
@@ -53,7 +59,6 @@ public class ETFEndpoint {
     public void error(Session session, Throwable t) {
         /* Remove this connection from the queue */
         queue.remove(session);
-        logger.log(Level.INFO, t.toString());
-        logger.log(Level.INFO, "Connection error.");
+        logger.error("Connection error.\n" + t.toString());
     }
 }
